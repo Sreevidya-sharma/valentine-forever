@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Valentine forever</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>❤️</text></svg>">
+
+<style>
+*{box-sizing:border-box}
+html,body{
+margin:0;
+padding:0;
+width:100%;
+height:100%;
+background:#ffd6e8;
+font-family:Arial,Helvetica,sans-serif;
+overflow:hidden
+}
+
+.container{
+width:100%;
+height:100%;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+z-index:2;
+position:relative
+}
+
+.question{
+margin-bottom:18px;
+font-size:20px;
+color:#ff5fa2;
+font-weight:600;
+text-align:center
+}
+
+video{
+width:320px;
+max-width:90vw;
+border-radius:22px;
+box-shadow:0 15px 40px rgba(0,0,0,.25)
+}
+
+#message{
+margin-top:14px;
+font-size:18px;
+color:#ff5fa2;
+font-weight:600;
+min-height:28px;
+text-align:center
+}
+
+.buttons{
+margin-top:22px;
+display:flex;
+gap:26px;
+justify-content:center;
+position:relative
+}
+
+.after-four{
+flex-direction:column;
+gap:16px
+}
+
+button{
+padding:12px 30px;
+font-size:16px;
+border:none;
+border-radius:30px;
+cursor:pointer;
+transition:transform .25s, box-shadow .25s
+}
+
+button:hover{
+box-shadow:0 8px 20px rgba(0,0,0,.25)
+}
+
+.yes{
+background:#ff5fa2;
+color:white
+}
+
+.yes span{
+display:block;
+font-size:12px;
+margin-top:4px
+}
+
+.no{
+background:white;
+color:#ff5fa2
+}
+
+.no.evasive{
+position:fixed;
+z-index:10;
+}
+
+.hearts{
+position:fixed;
+inset:0;
+pointer-events:none;
+z-index:1
+}
+
+.heart{
+position:absolute;
+bottom:-20px;
+color:#ff5fa2;
+animation:floatUp linear infinite;
+opacity:.8
+}
+
+@keyframes floatUp{
+from{transform:translateY(0) scale(1)}
+to{transform:translateY(-110vh) scale(1.8);opacity:0}
+}
+
+.contract{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.45);
+display:none;
+align-items:center;
+justify-content:center;
+z-index:3;
+opacity:0;
+transition:opacity .6s ease
+}
+
+.contract.show{
+display:flex;
+opacity:1
+}
+
+.contract-box{
+background:white;
+padding:26px;
+border-radius:22px;
+text-align:center;
+width:90%;
+max-width:340px;
+box-shadow:0 20px 50px rgba(0,0,0,.3)
+}
+
+.contract-box h2{
+color:#ff5fa2;
+margin-bottom:12px
+}
+
+.contract-box ul{
+list-style:none;
+padding:0;
+margin-bottom:18px;
+font-weight:600;
+color:#555
+}
+
+.contract-box li{
+margin:8px 0
+}
+
+.accept{
+background:#ff5fa2;
+color:white;
+width:100%
+}
+.love-screen{
+position:fixed;
+inset:0;
+background:#ffd6e8;
+display:none;
+align-items:center;
+justify-content:center;
+z-index:5
+}
+
+.love-wrapper{
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:18px
+}
+
+.love-wrapper img{
+max-width:90vw;
+max-height:75vh;
+border-radius:22px;
+box-shadow:0 25px 60px rgba(0,0,0,.35)
+}
+
+.love-text{
+font-size:20px;
+font-weight:700;
+color:#ff3f8e;
+animation:danceShadow 1.8s infinite ease-in-out;
+}
+
+@keyframes danceShadow{
+0%{
+text-shadow:0 0 6px rgba(255,95,162,.4)
+}
+25%{
+text-shadow:2px 2px 10px rgba(255,95,162,.6)
+}
+50%{
+text-shadow:-2px 3px 14px rgba(255,95,162,.8)
+}
+75%{
+text-shadow:3px -2px 10px rgba(255,95,162,.6)
+}
+100%{
+text-shadow:0 0 6px rgba(255,95,162,.4)
+}
+}
+</style>
+</head>
+
+<body>
+
+<div class="love-screen" id="loveScreen">
+  <div class="love-wrapper">
+    <img src="love.jpg">
+    <div class="love-text">I love you my Bujji ❤️</div>
+  </div>
+</div>
+
+<div class="hearts" id="hearts"></div>
+
+<div class="container">
+<h1 class="question">Will you be my valentine for all the lives we come?</h1>
+
+<video id="video" muted playsinline loop>
+<source src="question.mp4" type="video/mp4">
+</video>
+
+<p id="message"></p>
+
+<div class="buttons" id="buttons">
+<button class="yes" id="yesBtn">Yes</button>
+<button class="no" id="noBtn">No</button>
+</div>
+</div>
+
+<div class="contract" id="contract">
+<div class="contract-box">
+<h2>Lifetime Agreement 💍</h2>
+<ul>
+<li>Unlimited hugs</li>
+<li>No takebacks</li>
+<li>Valentine forever</li>
+</ul>
+<button class="accept" id="acceptBtn">Accept</button>
+</div>
+</div>
+
+<script>
+const video=document.getElementById("video")
+const message=document.getElementById("message")
+const noBtn=document.getElementById("noBtn")
+const yesBtn=document.getElementById("yesBtn")
+const buttons=document.getElementById("buttons")
+const hearts=document.getElementById("hearts")
+const contract=document.getElementById("contract")
+const loveScreen=document.getElementById("loveScreen")
+const acceptBtn=document.getElementById("acceptBtn")
+
+let noCount=0
+let yesScale=1
+let evasive=false
+
+window.onload=()=>video.play().catch(()=>{})
+
+function growYes(){
+yesScale+=0.15
+yesBtn.style.transform=`scale(${yesScale})`
+}
+
+function createHeart(){
+const h=document.createElement("div")
+h.className="heart"
+h.innerHTML="❤"
+h.style.left=Math.random()*100+"vw"
+h.style.fontSize=16+Math.random()*26+"px"
+h.style.animationDuration=3+Math.random()*3+"s"
+hearts.appendChild(h)
+setTimeout(()=>h.remove(),6000)
+}
+
+function startHearts(){
+setInterval(createHeart,120)
+}
+
+function playYes(){
+message.innerText="Hehehe I knew it 😌"
+video.muted=false
+video.src="yes.mp4"
+video.loop=true
+video.play()
+startHearts()
+setTimeout(()=>{
+contract.style.display="flex"
+setTimeout(()=>contract.classList.add("show"),50)
+},3000)
+}
+
+function overlaps(a,b){
+return !(
+a.right<b.left||
+a.left>b.right||
+a.bottom<b.top||
+a.top>b.bottom
+)
+}
+
+function moveNoRandom(){
+const safePadding=12
+
+const yesRect=yesBtn.getBoundingClientRect()
+const videoRect=video.getBoundingClientRect()
+const msgRect=message.getBoundingClientRect()
+
+const maxX=window.innerWidth-noBtn.offsetWidth-safePadding
+const maxY=window.innerHeight-noBtn.offsetHeight-safePadding
+
+let x,y,noRect,tries=0
+
+do{
+x=Math.random()*maxX
+y=Math.random()*maxY
+
+noBtn.style.left=x+"px"
+noBtn.style.top=y+"px"
+
+noRect=noBtn.getBoundingClientRect()
+tries++
+}while(
+tries<60 && (
+overlaps(noRect,yesRect) ||
+overlaps(noRect,videoRect) ||
+overlaps(noRect,msgRect)
+)
+)
+}
+
+noBtn.onclick=()=>{
+if(!evasive){
+noCount++
+growYes()
+if(noCount===1){message.innerText="What if I kiss you more?";video.src="no1.mp4"}
+else if(noCount===2){message.innerText="How dare you say that!";video.src="no2.mp4"}
+else if(noCount===3){message.innerText="Ninnu manhandling chestha inka";video.src="no3.mp4"}
+else{
+message.innerText="Nakem vaddhu po nuvvu"
+video.src="no4.mp4"
+video.loop=true
+buttons.classList.add("after-four")
+noBtn.classList.add("evasive")
+evasive=true
+yesBtn.innerHTML="Yes<span>Yes tappa vere option ledhu niku inka</span>"
+setTimeout(moveNoRandom,300)
+}
+video.muted=false
+video.play()
+}else moveNoRandom()
+}
+
+acceptBtn.onclick=()=>{
+contract.classList.remove("show")
+setTimeout(()=>{
+contract.style.display="none"
+loveScreen.style.display="flex"
+},300)
+}
+
+yesBtn.onclick=playYes
+</script>
+
+</body>
+</html>
